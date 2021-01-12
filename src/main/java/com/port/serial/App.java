@@ -57,21 +57,17 @@ public class App
 
         }
 
-       // comPort = SerialPort.getCommPorts()[com.COM2.getCOM()];
-
         comPort = SerialPort.getCommPorts()[index_of_port];
         setCOMParameters();
     }
 
-    public String getSelectedCOMPort()
-    {
+    public String getSelectedCOMPort() {
         return SelectedCOMPort;
     }
 
 
 
-    public void CLosePortCOM()
-    {
+    public void CLosePortCOM() {
         comPort.closePort();
     }
 
@@ -154,18 +150,12 @@ public class App
                     if(iterator == max_iterator)
                         iterator = 0;
 
-//                    if(value.charAt(0) == '\0' || value.charAt(0) == 0x00)
-//                    {
-//                        dos.writeChar('\n');
-//                    }
 
                     for(int i = 0 ; i < finishingString.length; i++) {
                         System.out.println("cur iter: :" + iterator);
                         System.out.println("Iterator[" + i + "] : " + finishingString[i]);
                     }
 
-
-                    /* file finished */
 
                     if(finishingString[0] == 'M' && finishingString[1] == '3' && finishingString[2] == '0'){
                         System.out.println("FILE READ FINISHED");
@@ -202,23 +192,12 @@ public class App
 
     public static void setCOMParameters()
     {
-//        comPort.setBaudRate(Integer.parseInt(machine_info.getBaudRate()));
-//        comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
-//        comPort.setParity(Integer.parseInt(machine_info.getParity()));
-//        comPort.setNumStopBits(Integer.parseInt(machine_info.getStopBits()));
-//        comPort.setNumDataBits(Integer.parseInt(machine_info.getDataBits()));
-
         comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
         comPort.setComPortParameters(300,7,SerialPort.ONE_STOP_BIT,SerialPort.EVEN_PARITY);
-
-      //  comPort.setNumDataBits(SerialPort.);
 
     }
 
     public void SendDataToCNC(String file) throws IOException {
-
-    //    SerialPort comPort = SerialPort.getCommPorts()[com.COM2.getCOM()];
-     //   printCOMInformation2();
 
         try {
             comPort.openPort();
@@ -228,23 +207,18 @@ public class App
             System.out.print("Cannot open port: "+ e);
         }
 
-      //  Scanner scan = new Scanner(System.in);
-     //   byte[] filecontent = Files.readAllBytes(Paths.get("gcode.txt"));
+     //   byte[] filecontent = Files.readAllBytes(Paths.get("gcode.txt"));  // <- testing purpose
         byte[] filecontent = Files.readAllBytes(Paths.get(file));
 
         int sendDataSize = filecontent.length;
+        try {
+            comPort.writeBytes(filecontent, sendDataSize);
+        }
+        catch (Exception ex) {
+            System.out.println("blad przy wysylaniu " + ex);
+        }
+                System.out.println("sent");
+                comPort.closePort();
 
-     //   System.out.print("Press any key to send data . . . ");
-      //  scan.nextLine();
-try {
-    comPort.writeBytes(filecontent, sendDataSize);
-}
-catch (Exception ex)
-{
-    System.out.println("blad przy wysylaniu " + ex);
-}
-        System.out.println("sent");
-
-        comPort.closePort();
-    }
+            }
 }
