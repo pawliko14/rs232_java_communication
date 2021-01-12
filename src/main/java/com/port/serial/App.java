@@ -33,6 +33,8 @@ public class App
         return value;
     }
 
+    private String SelectedCOMPort;
+
 
     public App()
     {
@@ -49,7 +51,7 @@ public class App
             if(serialPorts[portNo].getSystemPortName().equals("COM4"))
             {
                 System.out.println("TAKEN PORT: " + serialPorts[portNo].getSystemPortName());
-
+                SelectedCOMPort =  serialPorts[portNo].getSystemPortName();
                 break;
             }
 
@@ -60,6 +62,12 @@ public class App
         comPort = SerialPort.getCommPorts()[index_of_port];
         setCOMParameters();
     }
+
+    public String getSelectedCOMPort()
+    {
+        return SelectedCOMPort;
+    }
+
 
 
     public void CLosePortCOM()

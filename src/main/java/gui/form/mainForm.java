@@ -45,6 +45,8 @@ public  class mainForm      {
     private JButton SaveMachineTransmissionButton;
     private JButton Transmission;
     private JButton AbortTransmissionButton;
+    private JTextField COMTextField;
+    private JTextField SelectedCOMPort;
     private JTextArea Text_from_file;
     private JTextPane SelectedFile_text;
     private JFileChooser fc;
@@ -100,6 +102,7 @@ public  class mainForm      {
 
                     App test = new App();
                     test.printCOMInformation2();
+                    SelectedCOMPort.setText(test.getSelectedCOMPort());
              //       test.setCOMParameters();
 
                     try {
@@ -127,7 +130,11 @@ public  class mainForm      {
 
                 SavingArea.setText("");
 
-                transmission.CLosePortCOM();
+                try {
+                    transmission.CLosePortCOM();
+                }catch (Exception exc ){
+                    JOptionPane.showMessageDialog(null," Something went wrong while data saving!" + exc);
+                }
 
                 if(!Transmission.isEnabled())
                     Transmission.setEnabled(true);
@@ -271,6 +278,7 @@ public  class mainForm      {
             JOptionPane.showMessageDialog(null,"File saved!");
         }
         catch ( IOException e) {
+            JOptionPane.showMessageDialog(null,"Nie mozna zapisac pustego pliku!");
         }
         finally
         {
