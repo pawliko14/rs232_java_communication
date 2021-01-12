@@ -1,25 +1,41 @@
 package com.port.serial;
 import com.fazecast.jSerialComm.*;
+import gui.form.mainForm;
+import machine.transmission.info.machine_info;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.concurrent.ExecutionException;
+
+
 
 /**
  * Hello world!
  *
  */
-public class App 
-{ 
+public class App
+{
+    private static String value ;
+
 	public static SerialPort userPort;
 	static InputStream in;
 	private static String  fileName = "output.txt";
     private static FileOutputStream fos = null;
     private static DataOutputStream dos = null;
     private static char[] finishingString;
+    private  SerialPort comPort;
+
+    public String getValue()
+    {
+        return value;
+    }
+
+
+    public void CLosePortCOM()
+    {
+        comPort.closePort();
+    }
 
     public enum com {
 
@@ -38,37 +54,31 @@ public class App
 
     }
 
+    public void run(final StringValueClass interestingText)
+    {
+        System.out.println("connected to listener?");
 
-	public static void main(String args[]) throws InterruptedException, IOException {
-
-
-
-	    try {
+        try {
             fos = new FileOutputStream(fileName);
             dos = new DataOutputStream(fos);
-        }catch (Exception e)
-        {
+        }catch (Exception e){
             System.out.println("cannot open: " + fileName);
         }
 
-	    try{
-
-	        finishingString = new char[3];
-
-        }catch (Exception e)
-        {
+        try{
+            finishingString = new char[3];
+        }catch (Exception e) {
             System.out.println("Expection in finishingString creation");
         }
 
-
-        final SerialPort comPort = SerialPort.getCommPorts()[com.COM1.getCOM()];
+        comPort = SerialPort.getCommPorts()[com.COM2.getCOM()];
 
 
 
 
         printCOMInformation2(comPort);
-     //   setCOMParameters(comPort);
-      //  printCOMInformation2(comPort);
+        //   setCOMParameters(comPort);
+        //  printCOMInformation2(comPort);
 
 
         comPort.openPort();
@@ -88,7 +98,6 @@ public class App
                 }
                 byte[] newData = new byte[comPort.bytesAvailable()];
                 int numRead = comPort.readBytes(newData, newData.length);
-                String value = null;
                 try {
                     value = new String(newData, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
@@ -98,11 +107,11 @@ public class App
                 System.out.println("Read " + numRead + " bytes.");
                 System.out.println("value: " + value);
 
+                interestingText.setText(value);  // <- Obsrver Pattern
+
 
 
                 try{
-
-
                     dos.writeChar(value.charAt(0));
                     finishingString[iterator] = value.charAt(0);
 
@@ -115,8 +124,7 @@ public class App
 //                        dos.writeChar('\n');
 //                    }
 
-                    for(int i = 0 ; i < finishingString.length; i++)
-                    {
+                    for(int i = 0 ; i < finishingString.length; i++) {
                         System.out.println("cur iter: :" + iterator);
                         System.out.println("Iterator[" + i + "] : " + finishingString[i]);
                     }
@@ -124,8 +132,7 @@ public class App
 
                     /* file finished */
 
-                    if(finishingString[0] == 'M' && finishingString[1] == '3' && finishingString[2] == '0')
-                    {
+                    if(finishingString[0] == 'M' && finishingString[1] == '3' && finishingString[2] == '0'){
                         System.out.println("FILE READ FINISHED");
                         System.exit(1);
                     }
@@ -139,31 +146,114 @@ public class App
                     System.out.println("Error while writing to file" + ioe);
                 }
 
-
-
-
             }
         });
-         
+    }
 
-        Thread.sleep(1000);
 
-        Scanner scan = new Scanner(System.in);
-        File file;
-        byte[] filecontent = Files.readAllBytes(Paths.get("gcode.txt"));
-        int sendDataSize = filecontent.length;
 
-        System.out.print("Press any key to send data . . . ");
-        scan.nextLine();
-      
-        comPort.writeBytes(filecontent, sendDataSize);
-        System.out.println("sent");
+//	public static void main(String args[]) throws InterruptedException, IOException {
+//
+//    mainForm form = new mainForm();
+//
+//
+//
+//	    try {
+//            fos = new FileOutputStream(fileName);
+//            dos = new DataOutputStream(fos);
+//        }catch (Exception e){
+//            System.out.println("cannot open: " + fileName);
+//        }
+//
+//	    try{
+//	        finishingString = new char[3];
+//        }catch (Exception e) {
+//            System.out.println("Expection in finishingString creation");
+//        }
+//
+//        final SerialPort comPort = SerialPort.getCommPorts()[com.COM2.getCOM()];
+//
+//
+//
+//
+//        printCOMInformation2(comPort);
+//     //   setCOMParameters(comPort);
+//      //  printCOMInformation2(comPort);
+//
+//
+//        comPort.openPort();
+//
+//        comPort.addDataListener(new SerialPortDataListener() {
+//
+//            public int getListeningEvents() {
+//                return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+//            }
+//
+//
+//            int iterator = 0;
+//            int max_iterator = 3;
+//            public void serialEvent(SerialPortEvent event) {
+//                if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
+//                    return;
+//                }
+//                byte[] newData = new byte[comPort.bytesAvailable()];
+//                int numRead = comPort.readBytes(newData, newData.length);
+//                try {
+//                    value = new String(newData, "UTF-8");
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                    System.out.println("something went wrong");
+//                }
+//                System.out.println("Read " + numRead + " bytes.");
+//                System.out.println("value: " + value);
+//
+//
+//                try{
+//                    dos.writeChar(value.charAt(0));
+//                    finishingString[iterator] = value.charAt(0);
+//
+//                    iterator++;
+//                    if(iterator == max_iterator)
+//                        iterator = 0;
+//
+////                    if(value.charAt(0) == '\0' || value.charAt(0) == 0x00)
+////                    {
+////                        dos.writeChar('\n');
+////                    }
+//
+//                    for(int i = 0 ; i < finishingString.length; i++) {
+//                        System.out.println("cur iter: :" + iterator);
+//                        System.out.println("Iterator[" + i + "] : " + finishingString[i]);
+//                    }
+//
+//
+//                    /* file finished */
+//
+//                    if(finishingString[0] == 'M' && finishingString[1] == '3' && finishingString[2] == '0'){
+//                        System.out.println("FILE READ FINISHED");
+//                        System.exit(1);
+//                    }
+//
+//
+//
+//                } catch (FileNotFoundException fnfe) {
+//                    System.out.println("File not found" + fnfe);
+//                }
+//                catch (IOException ioe) {
+//                    System.out.println("Error while writing to file" + ioe);
+//                }
+//
+//            }
+//        });
+//
+//
 
-	}
+//
+//	}
 
 	private static void printCOMInformation2(SerialPort comPort)
     {
-        System.out.println( "COM settings : ");
+        System.out.println("COM settings : ");
         System.out.println("Port Name: " + comPort.getDescriptivePortName());
         System.out.println("Port desc: " +  comPort.getPortDescription());
         System.out.println("Baud: " + comPort.getBaudRate());
@@ -179,10 +269,43 @@ public class App
 
     private static void setCOMParameters(SerialPort comPort)
     {
-        comPort.setBaudRate(300);
+        comPort.setBaudRate(Integer.parseInt(machine_info.getBaudRate()));
         comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
-        comPort.setParity(SerialPort.EVEN_PARITY);
-        comPort.setNumStopBits(SerialPort.ONE_STOP_BIT);
-        comPort.setNumDataBits(7);
+        comPort.setParity(Integer.parseInt(machine_info.getParity()));
+        comPort.setNumStopBits(Integer.parseInt(machine_info.getStopBits()));
+        comPort.setNumDataBits(Integer.parseInt(machine_info.getDataBits()));
+    }
+
+    public void SendDataToCNC(String file) throws IOException {
+
+        SerialPort comPort = SerialPort.getCommPorts()[com.COM2.getCOM()];
+        printCOMInformation2(comPort);
+
+        try {
+            comPort.openPort();
+        }
+        catch (Exception e)
+        {
+            System.out.print("Cannot open port: "+ e);
+        }
+
+      //  Scanner scan = new Scanner(System.in);
+     //   byte[] filecontent = Files.readAllBytes(Paths.get("gcode.txt"));
+        byte[] filecontent = Files.readAllBytes(Paths.get(file));
+
+        int sendDataSize = filecontent.length;
+
+     //   System.out.print("Press any key to send data . . . ");
+      //  scan.nextLine();
+try {
+    comPort.writeBytes(filecontent, sendDataSize);
+}
+catch (Exception ex)
+{
+    System.out.println("blad przy wysylaniu " + ex);
+}
+        System.out.println("sent");
+
+        comPort.closePort();
     }
 }
