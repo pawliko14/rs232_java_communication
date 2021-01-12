@@ -1,22 +1,26 @@
 package gui.form;
 
+import com.fazecast.jSerialComm.SerialPort;
 import com.port.serial.App;
 import com.port.serial.StringValueClass;
+import jdk.nashorn.internal.objects.NativeArray;
 import machine.transmission.info.machine_info;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 
 
-public  class mainForm      {
+public  class mainForm extends JPanel {
     private JPanel panelMain;
     private JTextField ustawieniaTextField;
     private JPanel panelSettings;
@@ -47,22 +51,24 @@ public  class mainForm      {
     private JButton AbortTransmissionButton;
     private JTextField COMTextField;
     private JTextField SelectedCOMPort;
+    private JComboBox COMcomboBox;
     private JTextArea Text_from_file;
     private JTextPane SelectedFile_text;
     private JFileChooser fc;
-
     private String choosenFile_path;
     private String choosenFile_name;
     private File choosenFile;
-
     private String value;
-
     private StringValueClass bean;
+  //  private App transmission;
 
-    private App transmission;
 
-    public mainForm() {
+    public JPanel getter(){
+        return this.panelMain;
+    }
+    public mainForm(final App transmission) {
 
+        InitializeCOmboBox(transmission.getAvailableCOMPorts());
         InitializeTransmissionInfo();
 
         Select_fileButton.addActionListener(new ActionListener() {
@@ -169,28 +175,18 @@ public  class mainForm      {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                if(!AbortTransmissionButton.isEnabled())
-                {
+                if(!AbortTransmissionButton.isEnabled()) {
                     AbortTransmissionButton.setEnabled(true);
                     Transmission.setEnabled(false);
                 }
 
-
-                // HERE SHOULD NOT BE ADDEED AS NEW
-                // NIE MOZNA USUNAC ZE STOSU
-                 transmission = new App();
-
-                // CAREFULL!!!! lambda expression, not fully checked!
                 bean  = new StringValueClass();
-
                 bean.addPropertyChangeListener(lambda ->
                         SavingArea.append((String) lambda.getNewValue())
                         );
 
                 transmission.run(bean);
 
-
-                ///
 
                 value = transmission.getValue();
 
@@ -223,7 +219,35 @@ public  class mainForm      {
                 JOptionPane.showMessageDialog(null,"Transmission stopped, COM port is released");
             }
         });
+        COMcomboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                SerialPort SelectedItem = (SerialPort) COMcomboBox.getSelectedItem();
+
+
+
+                UpdateCOMSettings(SelectedItem);
+                JOptionPane.showMessageDialog(null,"kliknieto" + SelectedItem);
+            }
+        });
     }
+
+
+    private void UpdateCOMSettings(SerialPort selectedItem) {
+
+        SelectedCOMPort.setText(selectedItem.getSystemPortName());
+        BaudRateValue.setText(String.valueOf(selectedItem.getBaudRate()));
+        ParityValue.setText(String.valueOf(selectedItem.getParity()));
+        DataBitsValue.setText(String.valueOf(selectedItem.getNumDataBits()));
+
+    }
+
+    private void InitializeCOmboBox(List<SerialPort> availableCOMPorts) {
+
+        availableCOMPorts.forEach(e ->COMcomboBox.addItem(e));
+    }
+
 
     private void setTransmissionVisibility(Boolean trueFalse)
     {
@@ -289,7 +313,6 @@ public  class mainForm      {
             catch ( IOException e) {
             }
         }
-
     }
 
     private void checkIfAreaIsEmpty(JTextArea savingArea) {
@@ -302,7 +325,6 @@ public  class mainForm      {
         else {
             JOptionPane.showMessageDialog(null,"Nie mozna wyslac pustego!");
         }
-
     }
 
     private void printValueFromChoosenFileToTextPane(File choosenFile) throws IOException {
@@ -314,21 +336,6 @@ public  class mainForm      {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-    }
-
-
-
-
-    public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-
-
-        JFrame frame = new JFrame("App");
-        frame.setContentPane(new mainForm().panelMain);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
 
     }
 }

@@ -1,24 +1,15 @@
 package com.port.serial;
 import com.fazecast.jSerialComm.*;
-import gui.form.mainForm;
-import machine.transmission.info.machine_info;
 
 import java.util.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-
-
-
-/**
- * Hello world!
- *
- */
 public class App
 {
 
-    private static String value ;
+    private static String value;
 
 	public static SerialPort userPort;
 	static InputStream in;
@@ -35,27 +26,39 @@ public class App
 
     private String SelectedCOMPort;
 
+    private List<SerialPort> COMPortList;
+
+    public List<SerialPort> getAvailableCOMPorts()
+    {
+        return COMPortList;
+    }
 
     public App()
     {
+        COMPortList = new ArrayList<SerialPort>();
         // for tests :
         SerialPort[] serialPorts = SerialPort.getCommPorts();
        System.out.println("Number of serial port available:{}" +  serialPorts.length);
        int index_of_port = 0;
-        for (int portNo = 0; portNo < serialPorts.length; portNo++) {
-            index_of_port++;
-        //    System.out.println("SerialPort[{}]:[{},{}]"+ portNo + 1);
-        //    System.out.println( serialPorts[portNo].getSystemPortName());
-        //    System.out.println("COM shortened name: " + serialPorts[portNo].getSystemPortName() + " its index : " + index_of_port);
+        for (int portNo = 1; portNo < serialPorts.length; portNo++) {
+
+            System.out.println("SerialPort[{}]:[{},{}]"+ portNo + 1);
+            System.out.println( serialPorts[portNo].getSystemPortName());
+            System.out.println("COM shortened name: " + serialPorts[portNo].getSystemPortName() + " its index : " + index_of_port);
+
+            COMPortList.add(serialPorts[portNo]);
 
             if(serialPorts[portNo].getSystemPortName().equals("COM4"))
             {
                 System.out.println("TAKEN PORT: " + serialPorts[portNo].getSystemPortName());
                 SelectedCOMPort =  serialPorts[portNo].getSystemPortName();
-                break;
+
             }
 
+            index_of_port++;
         }
+
+
 
         comPort = SerialPort.getCommPorts()[index_of_port];
         setCOMParameters();
