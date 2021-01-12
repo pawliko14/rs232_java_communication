@@ -2,13 +2,13 @@ package machine.transmission.info;
 
 public class machine_info {
 
-    public static String BaudRate = "9600";
-    public static String Parity = "None";
-    public static String DataBits = "8";
-    public static String StopBits = "1";
+    public static String BaudRate = "300";
+    public static String Parity = "Even";
+    public static String DataBits = "7";
+    public static String StopBits = "2";
     public static String Timeout = "OFF";
     public static String xonxof = "ON";
-    public static String COM  ="COM4";
+    public static String COM  ="COM3";
 
     public static String getBaudRate() {
         return BaudRate;

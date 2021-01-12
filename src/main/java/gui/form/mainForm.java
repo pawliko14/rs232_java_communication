@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 
 
@@ -43,6 +44,7 @@ public  class mainForm      {
     private JButton ChangeMachineTransmission;
     private JButton SaveMachineTransmissionButton;
     private JButton Transmission;
+    private JButton AbortTransmissionButton;
     private JTextArea Text_from_file;
     private JTextPane SelectedFile_text;
     private JFileChooser fc;
@@ -97,6 +99,8 @@ public  class mainForm      {
                 if (!data.equals("")) {
 
                     App test = new App();
+                    test.printCOMInformation2();
+             //       test.setCOMParameters();
 
                     try {
                         test.SendDataToCNC(choosenFile_path );
@@ -125,6 +129,8 @@ public  class mainForm      {
 
                 transmission.CLosePortCOM();
 
+                if(!Transmission.isEnabled())
+                    Transmission.setEnabled(true);
 
 
             }
@@ -156,6 +162,12 @@ public  class mainForm      {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                if(!AbortTransmissionButton.isEnabled())
+                {
+                    AbortTransmissionButton.setEnabled(true);
+                    Transmission.setEnabled(false);
+                }
+
 
                 // HERE SHOULD NOT BE ADDEED AS NEW
                 // NIE MOZNA USUNAC ZE STOSU
@@ -167,6 +179,7 @@ public  class mainForm      {
                 bean.addPropertyChangeListener(lambda ->
                         SavingArea.append((String) lambda.getNewValue())
                         );
+
                 transmission.run(bean);
 
 
@@ -175,6 +188,32 @@ public  class mainForm      {
                 value = transmission.getValue();
 
 
+            }
+        });
+        AbortTransmissionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    transmission.CLosePortCOM();
+                    Transmission.setEnabled(true);
+
+                } catch(Exception exc)
+                {
+                    JOptionPane.showMessageDialog(null,"Cannot Close COM Port");
+                }
+
+                try {
+                    if(AbortTransmissionButton.isEnabled()) {
+                        AbortTransmissionButton.setEnabled(false);
+                    }
+                }
+                catch(Exception exc2) {
+                    JOptionPane.showMessageDialog(null,"Cannot enabled AbortTransmission");
+
+                }
+
+                SavingArea.setText("");
+                JOptionPane.showMessageDialog(null,"Transmission stopped, COM port is released");
             }
         });
     }
