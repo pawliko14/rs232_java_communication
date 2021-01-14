@@ -4,7 +4,7 @@
 
   <groupId>com.port</groupId>
   <artifactId>serial</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
     <build>
         <plugins>
             <plugin>
@@ -15,6 +15,10 @@
                     <target>8</target>
                 </configuration>
             </plugin>
+
+
+
+
         </plugins>
     </build>
     <packaging>jar</packaging>

@@ -1,22 +1,19 @@
 package gui.form;
 
+import com.fazecast.jSerialComm.SerialPort;
 import com.port.serial.App;
 import com.port.serial.StringValueClass;
 import machine.transmission.info.machine_info;
-
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
+import java.util.List;
+import java.util.ArrayList;
 
 
-public  class mainForm      {
+
+public  class mainForm extends JPanel {
     private JPanel panelMain;
     private JTextField ustawieniaTextField;
     private JPanel panelSettings;
@@ -47,22 +44,24 @@ public  class mainForm      {
     private JButton AbortTransmissionButton;
     private JTextField COMTextField;
     private JTextField SelectedCOMPort;
+    private JComboBox COMcomboBox;
     private JTextArea Text_from_file;
     private JTextPane SelectedFile_text;
     private JFileChooser fc;
-
-    private String choosenFile_path;
-    private String choosenFile_name;
-    private File choosenFile;
-
+    private String chooseFile_path;
+    private String chooseFile_name;
+    private File chooseFile;
     private String value;
-
     private StringValueClass bean;
+  //  private App transmission;
 
-    private App transmission;
 
-    public mainForm() {
+    public JPanel getter(){
+        return this.panelMain;
+    }
+    public mainForm(final App transmission) {
 
+        InitializeCOmboBox(transmission.getAvailableCOMPorts());
         InitializeTransmissionInfo();
 
         Select_fileButton.addActionListener(new ActionListener() {
@@ -75,155 +74,181 @@ public  class mainForm      {
                 fc.updateUI();
                 fc.showOpenDialog(null);
 
-                choosenFile_path = fc.getSelectedFile().getAbsolutePath();
-                choosenFile_name = fc.getSelectedFile().getName();
+                chooseFile_path = fc.getSelectedFile().getAbsolutePath();
+                chooseFile_name = fc.getSelectedFile().getName();
 
-                SelectedFile.setText(choosenFile_name);
+                SelectedFile.setText(chooseFile_name);
                 try {
-                    choosenFile = fc.getSelectedFile();
+                    chooseFile = fc.getSelectedFile();
                 } catch (Exception exc) {
                     System.out.println("something went wrong with file!" + exc);
                 }
 
                 try {
-                    printValueFromChoosenFileToTextPane(choosenFile);
+                    printValueFromChoosenFileToTextPane(chooseFile);
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
             }
         });
-        SendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        SendButton.addActionListener(e -> {
 
-                String data = FileTextArea.getText().trim();
+            String data = FileTextArea.getText().trim();
 
-                if (!data.equals("")) {
+            if (!data.equals("")) {
 
-                    App test = new App();
-                    test.printCOMInformation2();
-                    SelectedCOMPort.setText(test.getSelectedCOMPort());
-             //       test.setCOMParameters();
-
-                    try {
-                        test.SendDataToCNC(choosenFile_path );
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
-
-                    JOptionPane.showMessageDialog(null, "Wyslano");
-
-
-
-
-                } else {
-                    JOptionPane.showMessageDialog(null, "Nie mozna wyslac pustego!");
-                }
-
-            }
-        });
-        SaveData.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                save_taken_data_into_file();
-
-                SavingArea.setText("");
+                App test = new App();
+                test.printCOMInformation2();
+                SelectedCOMPort.setText(test.getSelectedCOMPort());
+         //       test.setCOMParameters();
 
                 try {
-                    transmission.CLosePortCOM();
-                }catch (Exception exc ){
-                    JOptionPane.showMessageDialog(null," Something went wrong while data saving!" + exc);
+                    test.SendDataToCNC(chooseFile_path);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
                 }
 
-                if(!Transmission.isEnabled())
-                    Transmission.setEnabled(true);
+                JOptionPane.showMessageDialog(null, "Wyslano");
 
 
+
+
+            } else {
+                JOptionPane.showMessageDialog(null, "Nie mozna wyslac pustego!");
             }
+
         });
-        ChangeMachineTransmission.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SaveMachineTransmissionButton.setEnabled(true);
-                SaveMachineTransmissionButton.setVisible(true);
-                setTransmissionVisibility(true);
+        SaveData.addActionListener(e -> {
+
+            save_taken_data_into_file();
+            SavingArea.setText("");
+
+            try {
+                transmission.CLosePortCOM();
+            }catch (Exception exc ){
+                JOptionPane.showMessageDialog(null," Something went wrong while data saving!" + exc);
             }
+
+            if(!Transmission.isEnabled())
+                Transmission.setEnabled(true);
+
+
         });
-        SaveMachineTransmissionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-
-                SaveMachineTransmissionButton.setEnabled(false);
-                SaveMachineTransmissionButton.setVisible(false);
-                setTransmissionVisibility(false);
-
-
-                doTransmissionValueChange();
-                JOptionPane.showMessageDialog(null, "changes saved");
-
-            }
+        ChangeMachineTransmission.addActionListener(e -> {
+            SaveMachineTransmissionButton.setEnabled(true);
+            SaveMachineTransmissionButton.setVisible(true);
+            setTransmissionVisibility(true);
         });
-        Transmission.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
 
-                if(!AbortTransmissionButton.isEnabled())
-                {
-                    AbortTransmissionButton.setEnabled(true);
-                    Transmission.setEnabled(false);
-                }
+        SaveMachineTransmissionButton.addActionListener(e -> {
 
 
-                // HERE SHOULD NOT BE ADDEED AS NEW
-                // NIE MOZNA USUNAC ZE STOSU
-                 transmission = new App();
-
-                // CAREFULL!!!! lambda expression, not fully checked!
-                bean  = new StringValueClass();
-
-                bean.addPropertyChangeListener(lambda ->
-                        SavingArea.append((String) lambda.getNewValue())
-                        );
-
-                transmission.run(bean);
+            SaveMachineTransmissionButton.setEnabled(false);
+            SaveMachineTransmissionButton.setVisible(false);
+            setTransmissionVisibility(false);
 
 
-                ///
+            doTransmissionValueChange();
+            JOptionPane.showMessageDialog(null, "changes saved");
 
-                value = transmission.getValue();
-
-
-            }
         });
-        AbortTransmissionButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    transmission.CLosePortCOM();
-                    Transmission.setEnabled(true);
+        Transmission.addActionListener(e -> {
 
-                } catch(Exception exc)
-                {
-                    JOptionPane.showMessageDialog(null,"Cannot Close COM Port");
-                }
-
-                try {
-                    if(AbortTransmissionButton.isEnabled()) {
-                        AbortTransmissionButton.setEnabled(false);
-                    }
-                }
-                catch(Exception exc2) {
-                    JOptionPane.showMessageDialog(null,"Cannot enabled AbortTransmission");
-
-                }
-
-                SavingArea.setText("");
-                JOptionPane.showMessageDialog(null,"Transmission stopped, COM port is released");
+            if(!AbortTransmissionButton.isEnabled()) {
+                AbortTransmissionButton.setEnabled(true);
+                Transmission.setEnabled(false);
             }
+
+            bean  = new StringValueClass();
+            bean.addPropertyChangeListener(lambda ->
+                    SavingArea.append((String) lambda.getNewValue())
+                    );
+
+            transmission.run(bean);
+
+
+            value = transmission.getValue();
+
+
+        });
+        AbortTransmissionButton.addActionListener(e -> {
+            try {
+                transmission.CLosePortCOM();
+                Transmission.setEnabled(true);
+
+            } catch(Exception exc)
+            {
+                JOptionPane.showMessageDialog(null,"Cannot Close COM Port");
+            }
+
+            try {
+                if(AbortTransmissionButton.isEnabled()) {
+                    AbortTransmissionButton.setEnabled(false);
+                }
+            }
+            catch(Exception exc2) {
+                JOptionPane.showMessageDialog(null,"Cannot enabled AbortTransmission");
+            }
+
+            SavingArea.setText("");
+            JOptionPane.showMessageDialog(null,"Transmission stopped, COM port is released");
+        });
+
+        COMcomboBox.addActionListener(e -> {
+
+          SerialPort SelectedItem =   getCOMbyCOMPort(COMcomboBox.getSelectedItem().toString());
+
+
+          //  assert SelectedItem != null;
+            UpdateCOMSettings(SelectedItem);
+            JOptionPane.showMessageDialog(null,"Wybrano :" + SelectedItem + " -> " + SelectedItem.getSystemPortName());
+
+            System.out.println(SelectedItem.getBaudRate() + ", " + SelectedItem.getParity());
+
         });
     }
+
+    private List<SerialPort> COMPortList;
+    private SerialPort getCOMbyCOMPort(String selectedItem) {
+
+        COMPortList = new ArrayList<>();
+
+        SerialPort SerialPortToReturn = null;
+
+        SerialPort[] serialPorts = SerialPort.getCommPorts();
+        System.out.println("Number of serial port available:{}" +  serialPorts.length);
+        int index_of_port = 0;
+        for (int portNo = 1; portNo < serialPorts.length; portNo++) {
+            if(serialPorts[portNo].getSystemPortName().equals(selectedItem)) {
+                SerialPortToReturn = serialPorts[portNo];
+                break;
+            }
+            index_of_port++;
+        }
+
+        return SerialPortToReturn;
+    }
+
+
+    private void UpdateCOMSettings(SerialPort selectedItem) {
+
+        SelectedCOMPort.setText(selectedItem.getSystemPortName());
+        BaudRateValue.setText(String.valueOf(selectedItem.getBaudRate()));
+        ParityValue.setText(String.valueOf(selectedItem.getParity()));
+        DataBitsValue.setText(String.valueOf(selectedItem.getNumDataBits()));
+
+    }
+
+    private void InitializeCOmboBox(List<SerialPort> availableCOMPorts) {
+
+        try {
+            availableCOMPorts.forEach(e -> COMcomboBox.addItem(e.getSystemPortName()));
+        }catch(Exception e)
+        {
+            System.out.println("Error in COMcomboBox initliazie: " + e);
+        }
+    }
+
 
     private void setTransmissionVisibility(Boolean trueFalse)
     {
@@ -272,6 +297,7 @@ public  class mainForm      {
 
         try
         {
+            assert fileToSave != null;
             writer = new BufferedWriter( new FileWriter(   fileToSave));
             checkIfAreaIsEmpty(SavingArea);
             writer.write(String.valueOf(SavingArea.getText()));  // temporary, change to 2nd one
@@ -287,9 +313,9 @@ public  class mainForm      {
                     writer.close( );
             }
             catch ( IOException e) {
+                JOptionPane.showMessageDialog(null,"Cannot close file! :" + e);
             }
         }
-
     }
 
     private void checkIfAreaIsEmpty(JTextArea savingArea) {
@@ -302,7 +328,6 @@ public  class mainForm      {
         else {
             JOptionPane.showMessageDialog(null,"Nie mozna wyslac pustego!");
         }
-
     }
 
     private void printValueFromChoosenFileToTextPane(File choosenFile) throws IOException {
@@ -314,21 +339,6 @@ public  class mainForm      {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-    }
-
-
-
-
-    public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-
-
-        JFrame frame = new JFrame("App");
-        frame.setContentPane(new mainForm().panelMain);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
 
     }
 }
