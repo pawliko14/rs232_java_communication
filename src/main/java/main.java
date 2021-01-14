@@ -1,7 +1,7 @@
-package runningclass;
-
 import com.port.serial.App;
 import gui.form.mainForm;
+
+
 
 import javax.swing.*;
 
@@ -12,7 +12,7 @@ public class main {
 
         App transmission = new App();
 
-        JFrame frame = new JFrame("App");
+        JFrame frame = new JFrame("RS232 CNC -> COMPUTER -> CNC");
         frame.getContentPane().add(new mainForm(transmission).getter());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

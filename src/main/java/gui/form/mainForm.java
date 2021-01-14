@@ -273,7 +273,8 @@ public  class mainForm extends JPanel {
 
     private void InitializeTransmissionInfo() {
 
-        BaudRateValue.setText(machine_info.getBaudRate());
+//        BaudRateValue.setText(machine_info.getBaudRate());
+        BaudRateValue.setText("");
         ParityValue.setText(machine_info.getParity());
         DataBitsValue.setText(machine_info.getDataBits());
         StopBitsValue.setText(machine_info.getStopBits());

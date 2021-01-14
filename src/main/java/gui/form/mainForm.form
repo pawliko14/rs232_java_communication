@@ -64,6 +64,7 @@
                 <properties>
                   <editable value="false"/>
                   <enabled value="true"/>
+                  <text value=""/>
                 </properties>
               </component>
               <component id="54cb6" class="javax.swing.JTextField" binding="DataBitsValue">
@@ -74,6 +75,7 @@
                 </constraints>
                 <properties>
                   <editable value="false"/>
+                  <text value="-"/>
                 </properties>
               </component>
               <component id="305ed" class="javax.swing.JTextField" binding="StopBitsValue">
@@ -84,6 +86,7 @@
                 </constraints>
                 <properties>
                   <editable value="false"/>
+                  <text value="-"/>
                 </properties>
               </component>
               <component id="d9dc6" class="javax.swing.JTextField" binding="TimeOutValue">
@@ -94,6 +97,7 @@
                 </constraints>
                 <properties>
                   <editable value="false"/>
+                  <text value="-"/>
                 </properties>
               </component>
               <component id="4d2b7" class="javax.swing.JTextField" binding="XONXOFValue">
@@ -104,6 +108,7 @@
                 </constraints>
                 <properties>
                   <editable value="false"/>
+                  <text value="-"/>
                 </properties>
               </component>
             </children>
@@ -201,6 +206,7 @@
             <properties>
               <editable value="false"/>
               <horizontalAlignment value="0"/>
+              <text value="-"/>
             </properties>
           </component>
           <component id="a5c46" class="javax.swing.JButton" binding="ChangeMachineTransmission">
