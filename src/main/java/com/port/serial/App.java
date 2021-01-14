@@ -46,14 +46,21 @@ public class App
             System.out.println( serialPorts[portNo].getSystemPortName());
             System.out.println("COM shortened name: " + serialPorts[portNo].getSystemPortName() + " its index : " + index_of_port);
 
-            COMPortList.add(serialPorts[portNo]);
+            // invalid COM port, do not push to the list
+            if(!serialPorts[portNo].getSystemPortName().equals("CON")) {
+                COMPortList.add(serialPorts[portNo]);
+            }
+            else {
+                System.out.println("CON port exisits, index : " + portNo);
+            }
 
-            if(serialPorts[portNo].getSystemPortName().equals("COM4"))
+            if(serialPorts[portNo].getSystemPortName().equals("COM2"))
             {
                 System.out.println("TAKEN PORT: " + serialPorts[portNo].getSystemPortName());
                 SelectedCOMPort =  serialPorts[portNo].getSystemPortName();
 
             }
+
 
             index_of_port++;
         }

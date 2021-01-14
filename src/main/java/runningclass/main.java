@@ -1,4 +1,4 @@
-package Main;
+package runningclass;
 
 import com.port.serial.App;
 import gui.form.mainForm;
