@@ -44,72 +44,43 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="d2f08" class="javax.swing.JTextField" binding="BaudRateValue">
+              <component id="daf08" class="javax.swing.JComboBox" binding="BaudRateValue">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <editable value="false"/>
-                  <text value="-"/>
+                  <enabled value="false"/>
                 </properties>
               </component>
-              <component id="e21b2" class="javax.swing.JTextField" binding="ParityValue">
+              <component id="32ccc" class="javax.swing.JComboBox" binding="ParityValue">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties>
-                  <editable value="false"/>
-                  <enabled value="true"/>
-                  <text value=""/>
-                </properties>
+                <properties/>
               </component>
-              <component id="54cb6" class="javax.swing.JTextField" binding="DataBitsValue">
+              <component id="25abb" class="javax.swing.JComboBox" binding="DataBitsValue">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties>
-                  <editable value="false"/>
-                  <text value="-"/>
-                </properties>
+                <properties/>
               </component>
-              <component id="305ed" class="javax.swing.JTextField" binding="StopBitsValue">
+              <component id="cbb4d" class="javax.swing.JComboBox" binding="StopBItsValue">
                 <constraints>
-                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties>
-                  <editable value="false"/>
-                  <text value="-"/>
-                </properties>
+                <properties/>
               </component>
-              <component id="d9dc6" class="javax.swing.JTextField" binding="TimeOutValue">
+              <component id="9e90b" class="javax.swing.JComboBox" binding="TimeOutValue">
                 <constraints>
-                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
+                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties>
-                  <editable value="false"/>
-                  <text value="-"/>
-                </properties>
+                <properties/>
               </component>
-              <component id="4d2b7" class="javax.swing.JTextField" binding="XONXOFValue">
+              <component id="da7e8" class="javax.swing.JComboBox" binding="XONXOFValue">
                 <constraints>
-                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
+                  <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
-                <properties>
-                  <editable value="false"/>
-                  <text value="-"/>
-                </properties>
+                <properties/>
               </component>
             </children>
           </grid>
