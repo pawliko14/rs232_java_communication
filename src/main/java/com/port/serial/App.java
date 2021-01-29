@@ -205,7 +205,7 @@ public class App
     public static void setCOMParameters()
     {
         comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
-        comPort.setComPortParameters(300,7,SerialPort.ONE_STOP_BIT,SerialPort.EVEN_PARITY);
+        comPort.setComPortParameters(9600,7,SerialPort.ONE_STOP_BIT,SerialPort.EVEN_PARITY);
 
     }
 
@@ -213,18 +213,36 @@ public class App
 
         try {
             comPort.openPort();
+            printCOMInformation2();
+
         }
         catch (Exception e)
         {
             System.out.print("Cannot open port: "+ e);
         }
 
-     //   byte[] filecontent = Files.readAllBytes(Paths.get("gcode.txt"));  // <- testing purpose
+     //  byte[] filecontent = Files.readAllBytes(Paths.get("gcode.txt"));  // <- testing purpose
         byte[] filecontent = Files.readAllBytes(Paths.get(file));
 
         int sendDataSize = filecontent.length;
+        System.out.println("size of data BEFORE  send to cnc: " + sendDataSize);
+        System.out.println("filecontent BEFORE  send to cnc: " + filecontent.length);
+
+         int bytesAwait = sendDataSize;
         try {
-            comPort.writeBytes(filecontent, sendDataSize);
+            Thread.sleep(2000);
+     //  while(comPort.bytesAwaitingWrite() != 0) {
+                comPort.writeBytes(filecontent, sendDataSize);
+
+                System.out.println("available bytes : " + comPort.bytesAvailable());
+                System.out.println("buffed ready buffered size : " + comPort.getDeviceReadBufferSize());
+                System.out.println("device writ buffer size : " + comPort.getDeviceWriteBufferSize());
+                System.out.println("bytes awaiting to write : " + comPort.bytesAwaitingWrite());
+                System.out.println("filecontent While  send to cnc: " + filecontent.length);
+
+          //  }
+
+
         }
         catch (Exception ex) {
             System.out.println("blad przy wysylaniu " + ex);

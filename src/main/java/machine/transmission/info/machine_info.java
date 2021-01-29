@@ -2,7 +2,7 @@ package machine.transmission.info;
 
 public class machine_info {
 
-    public static String BaudRate = "300";
+    public static String BaudRate = "9200";
     public static String Parity = "Even";
     public static String DataBits = "7";
     public static String StopBits = "2";
