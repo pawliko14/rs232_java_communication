@@ -1,9 +1,11 @@
 package machine.transmission.info;
 
+import ComPortSettings.ComPortSetting;
+
 public class machine_info {
 
     public static String BaudRate = "9200";
-    public static String Parity = "Even";
+    public static ComPortSetting.Parities Parity = ComPortSetting.Parities.EVEN;
     public static String DataBits = "7";
     public static String StopBits = "2";
     public static String Timeout = "OFF";
@@ -14,7 +16,7 @@ public class machine_info {
         return BaudRate;
     }
 
-    public static String getParity() {
+    public static ComPortSetting.Parities getParity() {
         return Parity;
     }
 
@@ -42,7 +44,7 @@ public class machine_info {
         BaudRate = baudRate;
     }
 
-    public static void setParity(String parity) {
+    public static void setParity(ComPortSetting.Parities parity) {
         Parity = parity;
     }
 

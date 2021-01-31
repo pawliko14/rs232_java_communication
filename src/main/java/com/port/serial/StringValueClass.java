@@ -4,7 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 
-// peace of Observer Pattern
+// piece of Observer Pattern
 public class StringValueClass {
 
     private static String value ;
