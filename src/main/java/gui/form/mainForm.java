@@ -8,6 +8,7 @@ import machine.transmission.info.machine_info;
 
 import javax.print.attribute.standard.JobPriority;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -115,8 +116,8 @@ public  class mainForm extends JPanel {
          //       test.setCOMParameters();
 
                 try {
-                    test.SendDataToCNC(chooseFile_path);
-                } catch (IOException ioException) {
+                    test.SendDataToCNC(chooseFile_path, FileTextArea);
+                } catch (IOException | BadLocationException ioException) {
                     ioException.printStackTrace();
                 }
 
@@ -188,6 +189,7 @@ public  class mainForm extends JPanel {
                     SavingArea.append((String) lambda.getNewValue())
                     );
 
+
             transmission.run(bean);
 
 
@@ -215,7 +217,7 @@ public  class mainForm extends JPanel {
             }
 
             SavingArea.setText("");
-            JOptionPane.showMessageDialog(null,"Transmission stopped, COM port is released");
+            JOptionPane.showMessageDialog(null,"Transmission stopped, COM port is released 2nd try");
         });
 
         COMcomboBox.addActionListener(e -> {
@@ -280,6 +282,9 @@ public  class mainForm extends JPanel {
         // 2nd ComboBox -> Baud Rade chooser
         try{
             ComSetting.getBaudRateList().forEach(e -> BaudRateValue.addItem(e));
+            BaudRateValue.setSelectedItem(ComSetting.getBaudRateList().indexOf(3));
+
+
         }catch (Exception e){
             System.out.println("Error in BaudRate Setting");
         }
@@ -305,11 +310,11 @@ public  class mainForm extends JPanel {
             System.out.println("Error in BaudRate Setting");
         }
 
-        //6th ComBox -> Parity
+        //6th ComBox -> TimeOutValue
         try{
-            BaudRateValue.addItem("Not Implemented");
+            TimeOutValue.addItem("Not Implemented");
         }catch (Exception e){
-            System.out.println("Error in BaudRate Setting");
+            System.out.println("TimeOutValue is disabled");
         }
 
         //7th ComBox -> Parity

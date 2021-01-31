@@ -3,10 +3,16 @@ import com.fazecast.jSerialComm.*;
 import machine.transmission.info.machine_info;
 
 
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import java.awt.*;
 import java.util.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class App
 {
@@ -226,7 +232,7 @@ public class App
 
     }
 
-    public void SendDataToCNC(String file) throws IOException {
+    public void SendDataToCNC(String file, JTextArea fileTextArea) throws IOException, BadLocationException {
 
         try {
             comPort.openPort();
@@ -248,8 +254,48 @@ public class App
          int bytesAwait = sendDataSize;
         try {
             Thread.sleep(500);
-     //  while(comPort.bytesAwaitingWrite() != 0) {
+
+                //working properly
                 comPort.writeBytes(filecontent, sendDataSize);
+
+                // write bytes in the loop with check
+
+
+
+
+
+//
+//                String firstSelectedChar = null;
+//                for(int i = 0 ; i < filecontent.length; i++)
+//                {
+//                    byte   filecontent_shrinken = filecontent[i];
+//                    comPort.writeBytes(new byte[]{filecontent_shrinken}, 1);
+//                    System.out.println("added: "+ i + " -> " +  (char)filecontent_shrinken);
+//
+//                    String text = fileTextArea.getText();
+//                    if(1 >=1) {
+//                        firstSelectedChar = text.substring(i , i+ 1 );
+//                        try {
+//                            fileTextArea.getHighlighter().addHighlight(i,i+1, new DefaultHighlighter.DefaultHighlightPainter(Color.cyan));
+//                        } catch (BadLocationException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    String finalFirstSelectedChar = firstSelectedChar;
+//                    new Thread(() -> {
+//                               fileTextArea.append(finalFirstSelectedChar);
+//                               fileTextArea.revalidate();
+//                    }).start();
+//                }
+
+
+
+
+
+
+
+
+
 
 //                System.out.println("available bytes : " + comPort.bytesAvailable());
 //                System.out.println("buffed ready buffered size : " + comPort.getDeviceReadBufferSize());
@@ -259,12 +305,12 @@ public class App
 
           //  }
 
-
+            System.out.println("sent");
         }
         catch (Exception ex) {
             System.out.println("blad przy wysylaniu " + ex);
+            JOptionPane.showMessageDialog(null,"BLad przy wysylaniu : " + ex);
         }
-                System.out.println("sent");
                 comPort.closePort();
 
             }
