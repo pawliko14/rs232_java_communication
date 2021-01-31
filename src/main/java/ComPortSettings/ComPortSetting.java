@@ -6,7 +6,7 @@ public class ComPortSetting {
 
     private List<String> BaudRateList;
     private List<String> DataBitsList;
-    private List<String> ParityList;
+    private List<Parities> ParityList;
     private List<String> StopBitsList;
     private List<String> FlowcontrollList;
     
@@ -38,13 +38,31 @@ public class ComPortSetting {
         StopBitsList.add("1,5");
         StopBitsList.add("2");
 
+
     }
+
+
+        public enum Parities {
+
+            EVEN(2),
+            ODD(1),
+            NONE(0);
+
+            int par;
+
+            private Parities(int parity) {
+                par = parity;
+            }
+        }
+
 
     private void getParity() {
 
-        ParityList.add("Even");
-        ParityList.add("Odd");
-        ParityList.add("None");
+
+
+        ParityList.add(Parities.EVEN);
+        ParityList.add(Parities.ODD);
+        ParityList.add(Parities.NONE);
 
     }
 
@@ -76,7 +94,7 @@ public class ComPortSetting {
         return DataBitsList;
     }
 
-    public List<String> getParityList() {
+    public List<Parities> getParityList() {
         return ParityList;
     }
 

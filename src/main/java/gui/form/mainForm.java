@@ -171,7 +171,7 @@ public  class mainForm extends JPanel {
                 JOptionPane.showMessageDialog(null, "changes saved");
             }catch( Exception exc)
             {
-                JOptionPane.showMessageDialog(null,"something wwrong : " + exc);
+                JOptionPane.showMessageDialog(null,"something wwrong on valeu chamge : " + exc);
             }
 
 
@@ -332,18 +332,18 @@ public  class mainForm extends JPanel {
         ParityValue.setEnabled(trueFalse);
         DataBitsValue.setEnabled(trueFalse);
         StopBItsValue.setEnabled(trueFalse);
-        TimeOutValue.setEnabled(trueFalse);
+      //  TimeOutValue.setEnabled(trueFalse);
         XONXOFValue.setEnabled(trueFalse);
     }
 
     private void doTransmissionValueChange() {
 
         machine_info.setBaudRate(BaudRateValue.getSelectedItem().toString());
-//        machine_info.setParity(ParityValue.getText());
-//        machine_info.setDataBits(DataBitsValue.getText());
-//        machine_info.setStopBits(StopBitsValue.getText());
-//        machine_info.setTimeout(TimeOutValue.getText());
-//        machine_info.setXonxof(XONXOFValue.getText());
+        machine_info.setParity((ComPortSetting.Parities) ParityValue.getSelectedItem());
+        machine_info.setDataBits(DataBitsValue.getSelectedItem().toString());
+        machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
+   //     machine_info.setTimeout(TimeOutValue.getSelectedItem().toString());  // <- NPE!
+        machine_info.setXonxof(XONXOFValue.getSelectedItem().toString());
 
     }
 
@@ -356,6 +356,15 @@ public  class mainForm extends JPanel {
 //        StopBitsValue.setText(machine_info.getStopBits());
 //        TimeOutValue.setText(machine_info.getTimeout());
 //        XONXOFValue.setText(machine_info.getXonxof());
+
+
+        machine_info.setBaudRate(BaudRateValue.getSelectedItem().toString());
+        machine_info.setParity((ComPortSetting.Parities)ParityValue.getSelectedItem());
+        machine_info.setDataBits(DataBitsValue.getSelectedItem().toString());
+        machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
+      //  machine_info.setTimeout(TimeOutValue.getSelectedItem().toString());
+        machine_info.setXonxof(XONXOFValue.getSelectedItem().toString());
+
     }
 
     private void save_taken_data_into_file() {

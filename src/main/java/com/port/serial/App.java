@@ -1,6 +1,6 @@
 package com.port.serial;
 import com.fazecast.jSerialComm.*;
-
+import machine.transmission.info.machine_info;
 
 
 import java.util.*;
@@ -188,6 +188,7 @@ public class App
 
 	public void printCOMInformation2()
     {
+
         System.out.println("COM settings : ");
         System.out.println("Port Name: " + comPort.getDescriptivePortName());
         System.out.println("Port desc: " +  comPort.getPortDescription());
@@ -205,7 +206,23 @@ public class App
     public static void setCOMParameters()
     {
         comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
-        comPort.setComPortParameters(9600,7,SerialPort.ONE_STOP_BIT,SerialPort.EVEN_PARITY);
+      //  comPort.setComPortParameters(9600,7,SerialPort.ONE_STOP_BIT,SerialPort.EVEN_PARITY);
+
+        System.out.println("parity : " + machine_info.getParity());
+
+        try {
+            comPort.setComPortParameters(
+                    Integer.parseInt(machine_info.getBaudRate()),
+                    Integer.parseInt(machine_info.getDataBits()),
+                    SerialPort.ONE_STOP_BIT,
+                    machine_info.getParity().ordinal());
+
+
+
+        }catch(Exception e)
+        {
+            System.out.println("something went wrong, 221 setting comPort: " + e);
+        }
 
     }
 
@@ -230,15 +247,15 @@ public class App
 
          int bytesAwait = sendDataSize;
         try {
-            Thread.sleep(2000);
+            Thread.sleep(500);
      //  while(comPort.bytesAwaitingWrite() != 0) {
                 comPort.writeBytes(filecontent, sendDataSize);
 
-                System.out.println("available bytes : " + comPort.bytesAvailable());
-                System.out.println("buffed ready buffered size : " + comPort.getDeviceReadBufferSize());
-                System.out.println("device writ buffer size : " + comPort.getDeviceWriteBufferSize());
-                System.out.println("bytes awaiting to write : " + comPort.bytesAwaitingWrite());
-                System.out.println("filecontent While  send to cnc: " + filecontent.length);
+//                System.out.println("available bytes : " + comPort.bytesAvailable());
+//                System.out.println("buffed ready buffered size : " + comPort.getDeviceReadBufferSize());
+//                System.out.println("device writ buffer size : " + comPort.getDeviceWriteBufferSize());
+//                System.out.println("bytes awaiting to write : " + comPort.bytesAwaitingWrite());
+//                System.out.println("filecontent While  send to cnc: " + filecontent.length);
 
           //  }
 
