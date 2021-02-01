@@ -282,7 +282,7 @@ public  class mainForm extends JPanel {
         // 2nd ComboBox -> Baud Rade chooser
         try{
             ComSetting.getBaudRateList().forEach(e -> BaudRateValue.addItem(e));
-            BaudRateValue.setSelectedItem(ComSetting.getBaudRateList().indexOf(3));
+            BaudRateValue.setSelectedIndex(ComSetting.getBaudRateList().indexOf("9600"));
 
 
         }catch (Exception e){
