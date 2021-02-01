@@ -72,6 +72,7 @@ public class ComPortSetting {
         DataBitsList.add("8");
     }
 
+
     private void getBaud() {
 
         BaudRateList.add("300");
