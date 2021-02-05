@@ -171,7 +171,7 @@ public  class mainForm extends JPanel {
                 updateINIFile();
                 JOptionPane.showMessageDialog(null, "changes saved");
             }catch( Exception exc) {
-                JOptionPane.showMessageDialog(null,"something wwrong on valeu chamge : " + exc);
+                JOptionPane.showMessageDialog(null,"something went wrong on value change : " + exc);
             }
 
     //        UpdateConstantFile();
@@ -370,6 +370,13 @@ public  class mainForm extends JPanel {
     }
 
     private void InitializeTransmissionInfo() {
+
+        if( COMcomboBox.getSelectedItem().toString() != null ||  !COMcomboBox.getSelectedItem().toString().equals(""))
+               SelectedCOMPort.setText( COMcomboBox.getSelectedItem().toString());
+        else {
+            SelectedCOMPort.setText( "err");
+        }
+
         machine_info.setBaudRate(BaudRateValue.getSelectedItem().toString());
         machine_info.setParity((ComPortSetting.Parities)ParityValue.getSelectedItem());
         machine_info.setDataBits(DataBitsValue.getSelectedItem().toString());

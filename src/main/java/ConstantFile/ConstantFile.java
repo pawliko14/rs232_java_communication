@@ -30,35 +30,33 @@ public class ConstantFile {
     public String getTIMEOUT() {
         return TIMEOUT;
     }
-    public String getFLOWCONTROLL() {
-        return FLOWCONTROLL;
-    }
+    public String getFLOWCONTROLL() { return FLOWCONTROLL; }
     public String getBAUDRATE() {
         return BAUDRATE;
     }
 
     private ConstantFile() throws IOException, URISyntaxException {
-//       ini  = new Wini(new File("src\\runningclass.main\\resources\\constants.ini\\constants.ini"));
-
-     //   URL value = getClass().getResource("/constants/constants.ini");
-
-       // InputStream is = getClass().getResourceAsStream("/constants/constants.ini");
-//        ClassLoader classLoader = getClass().getClassLoader();
-//        InputStream inputStream = classLoader.getResourceAsStream("resources/constants/constants.ini");
-//        System.out.println("input stream: " + inputStream);
 
 
-        InputStream is = ClassLoader.class.getResourceAsStream("/constants/constants.ini");
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        // working on testing env. NOT WORKING in deployed .jar!!!!
+       // InputStream is = ClassLoader.class.getResourceAsStream("/constants/constants.ini");
+
+        String fileName = "constants/constants.ini";
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        File file = new File(classLoader.getResource(fileName).getFile());
 
         try {
-            ini = new Wini(is);
+            ini = new Wini(file);
         }
-        catch (Exception e)
-        {
-            System.out.println("exceiption -> " + e);
+        catch (Exception e) {
+            System.out.println("Wini Exception -> " + e);
         }
         wini(); // initialize data from file
+
+
+
+
 
     }
 
@@ -118,10 +116,17 @@ public class ConstantFile {
      * @param value           aimed value to change
      * @throws IOException
      */
-    public void changeWini(String structureName, iniElements en, String value) throws IOException {
-        ini.put(structureName, en.toString(), value);
-        ini.store();
-        System.out.println("Overriden element: " + en.toString() + " Value -> " + value );
+    public void changeWini(String structureName, iniElements en, String value)   {
+        try {
+            ini.put(structureName, en.toString(), value);
+            ini.store();
+
+            System.out.println("Overriden element: " + en.toString() + " Value -> " + value);
+        }
+        catch(Exception e)
+        {
+            System.out.println("Exception in ChangeWIni: " + e);
+        }
     }
 
 
