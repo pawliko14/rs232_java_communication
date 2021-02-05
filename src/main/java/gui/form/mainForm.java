@@ -1,6 +1,7 @@
 package gui.form;
 
 import ComPortSettings.ComPortSetting;
+import ConstantFile.ConstantFile;
 import com.fazecast.jSerialComm.SerialPort;
 import com.port.serial.App;
 import com.port.serial.StringValueClass;
@@ -12,6 +13,7 @@ import javax.swing.text.BadLocationException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -62,7 +64,6 @@ public  class mainForm extends JPanel {
     private StringValueClass bean;
 
     private ComPortSetting ComSetting;
-  //  private App transmission;
 
 
     public JPanel getter(){
@@ -110,10 +111,9 @@ public  class mainForm extends JPanel {
 
             if (!data.equals("")) {
 
-                App test = new App();
+                App test = new App(SelectedCOMPort.getText());
                 test.printCOMInformation2();
                 SelectedCOMPort.setText(test.getSelectedCOMPort());
-         //       test.setCOMParameters();
 
                 try {
                     test.SendDataToCNC(chooseFile_path, FileTextArea);
@@ -162,18 +162,19 @@ public  class mainForm extends JPanel {
             try {
                 setTransmissionVisibility(false);
             }
-            catch(Exception ee)
-            {
+            catch(Exception ee) {
                 JOptionPane.showMessageDialog(null,"Cannot Set transmission settings : " + ee);
             }
 
             try {
                 doTransmissionValueChange();
+                updateINIFile();
                 JOptionPane.showMessageDialog(null, "changes saved");
-            }catch( Exception exc)
-            {
+            }catch( Exception exc) {
                 JOptionPane.showMessageDialog(null,"something wwrong on valeu chamge : " + exc);
             }
+
+    //        UpdateConstantFile();
 
 
         });
@@ -191,8 +192,6 @@ public  class mainForm extends JPanel {
 
 
             transmission.run(bean);
-
-
             value = transmission.getValue();
 
 
@@ -202,8 +201,7 @@ public  class mainForm extends JPanel {
                 transmission.CLosePortCOM();
                 Transmission.setEnabled(true);
 
-            } catch(Exception exc)
-            {
+            } catch(Exception exc) {
                 JOptionPane.showMessageDialog(null,"Cannot Close COM Port");
             }
 
@@ -217,21 +215,39 @@ public  class mainForm extends JPanel {
             }
 
             SavingArea.setText("");
-            JOptionPane.showMessageDialog(null,"Transmission stopped, COM port is released 2nd try");
+            JOptionPane.showMessageDialog(null,"Transmission stopped");
         });
 
         COMcomboBox.addActionListener(e -> {
 
-          SerialPort SelectedItem =   getCOMbyCOMPort(COMcomboBox.getSelectedItem().toString());
-
-
-          //  assert SelectedItem != null;
-      //      UpdateCOMSettings(SelectedItem);
-            JOptionPane.showMessageDialog(null,"Wybrano :" + SelectedItem + " -> " + SelectedItem.getSystemPortName());
-
+            SerialPort SelectedItem =   getCOMbyCOMPort(COMcomboBox.getSelectedItem().toString());
             System.out.println(SelectedItem.getBaudRate() + ", " + SelectedItem.getParity());
 
+            SelectedCOMPort.setText( COMcomboBox.getSelectedItem().toString());
+
+
+
+
+
         });
+    }
+
+    private void updateINIFile() throws IOException, URISyntaxException {
+
+        machine_info.setBaudRate(BaudRateValue.getSelectedItem().toString());
+        machine_info.setParity((ComPortSetting.Parities) ParityValue.getSelectedItem());
+        machine_info.setDataBits(DataBitsValue.getSelectedItem().toString());
+        machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
+        machine_info.setXonxof((ComPortSetting.FlowControll)  XONXOFValue.getSelectedItem()) ;
+
+        ConstantFile.getInstance().changeWini("machine1", ConstantFile.iniElements.BAUDRATE,machine_info.getBaudRate());
+        ConstantFile.getInstance().changeWini("machine1", ConstantFile.iniElements.PARITY, String.valueOf(machine_info.getParity()));
+        ConstantFile.getInstance().changeWini("machine1", ConstantFile.iniElements.DATABITS,machine_info.getDataBits());
+        ConstantFile.getInstance().changeWini("machine1", ConstantFile.iniElements.STOPBITS,machine_info.getStopBits());
+        ConstantFile.getInstance().changeWini("machine1", ConstantFile.iniElements.FLOWCONTROLL, String.valueOf(machine_info.getXonxof()));
+
+
+
     }
 
     private void Initialize() {
@@ -260,14 +276,7 @@ public  class mainForm extends JPanel {
     }
 
 
-//    private void UpdateCOMSettings(SerialPort selectedItem) {
-//
-//        SelectedCOMPort.setText(selectedItem.getSystemPortName());
-//        BaudRateValue.setText(String.valueOf(selectedItem.getBaudRate()));
-//        ParityValue.setText(String.valueOf(selectedItem.getParity()));
-//        DataBitsValue.setText(String.valueOf(selectedItem.getNumDataBits()));
-//
-//    }
+
 
     private void InitializeCOmboBoxes(List<SerialPort> availableCOMPorts) {
 
@@ -282,7 +291,8 @@ public  class mainForm extends JPanel {
         // 2nd ComboBox -> Baud Rade chooser
         try{
             ComSetting.getBaudRateList().forEach(e -> BaudRateValue.addItem(e));
-            BaudRateValue.setSelectedIndex(ComSetting.getBaudRateList().indexOf("9600"));
+         //   BaudRateValue.setSelectedIndex(ComSetting.getBaudRateList().indexOf("9600"));
+            BaudRateValue.setSelectedItem(ConstantFile.getInstance().getBAUDRATE());
 
 
         }catch (Exception e){
@@ -292,6 +302,9 @@ public  class mainForm extends JPanel {
         //3rd ComBox -> Parity
         try{
             ComSetting.getParityList().forEach(e -> ParityValue.addItem(e));
+            ParityValue.setSelectedItem(ConstantFile.getInstance().getPARITY());
+
+
         }catch (Exception e){
             System.out.println("Error in Parity");
         }
@@ -299,6 +312,8 @@ public  class mainForm extends JPanel {
         //4th ComBox -> DataBits
         try{
             ComSetting.getDataBitsList().forEach(e -> DataBitsValue.addItem(e));
+            DataBitsValue.setSelectedItem(ConstantFile.getInstance().getDATABITS());
+
         }catch (Exception e){
             System.out.println("Error in DataBits");
         }
@@ -306,6 +321,8 @@ public  class mainForm extends JPanel {
         //5th ComBox -> StopBits
         try{
             ComSetting.getStopBitsList().forEach(e -> StopBItsValue.addItem(e));
+            StopBItsValue.setSelectedItem(ConstantFile.getInstance().getSTOPBITS());
+
         }catch (Exception e){
             System.out.println("Error in StopBits");
         }
@@ -320,6 +337,8 @@ public  class mainForm extends JPanel {
         //7th ComBox -> Flow COntroll
         try{
             ComSetting.getFlowcontrollList().forEach(e -> XONXOFValue.addItem(e));
+            XONXOFValue.setSelectedItem(ConstantFile.getInstance().getFLOWCONTROLL());
+
         }catch (Exception e){
             System.out.println("Error in FLowControll setting");
         }
@@ -337,7 +356,6 @@ public  class mainForm extends JPanel {
         ParityValue.setEnabled(trueFalse);
         DataBitsValue.setEnabled(trueFalse);
         StopBItsValue.setEnabled(trueFalse);
-      //  TimeOutValue.setEnabled(trueFalse);
         XONXOFValue.setEnabled(trueFalse);
     }
 
@@ -347,29 +365,15 @@ public  class mainForm extends JPanel {
         machine_info.setParity((ComPortSetting.Parities) ParityValue.getSelectedItem());
         machine_info.setDataBits(DataBitsValue.getSelectedItem().toString());
         machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
-   //     machine_info.setTimeout(TimeOutValue.getSelectedItem().toString());  // <- NPE!
- //       machine_info.setXonxof(XONXOFValue.getSelectedItem().toString());
         machine_info.setXonxof((ComPortSetting.FlowControll)  XONXOFValue.getSelectedItem()) ;
 
     }
 
     private void InitializeTransmissionInfo() {
-
-//       BaudRateValue.setText(machine_info.getBaudRate());
-//        BaudRateValue.setText("");
-//       ParityValue.setText(machine_info.getParity());
-//        DataBitsValue.setText(machine_info.getDataBits());
-//        StopBitsValue.setText(machine_info.getStopBits());
-//        TimeOutValue.setText(machine_info.getTimeout());
-//        XONXOFValue.setText(machine_info.getXonxof());
-
-
         machine_info.setBaudRate(BaudRateValue.getSelectedItem().toString());
         machine_info.setParity((ComPortSetting.Parities)ParityValue.getSelectedItem());
         machine_info.setDataBits(DataBitsValue.getSelectedItem().toString());
         machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
-      //  machine_info.setTimeout(TimeOutValue.getSelectedItem().toString());
-     //   machine_info.setXonxof(XONXOFValue.getSelectedItem().toString());
         machine_info.setXonxof((ComPortSetting.FlowControll) XONXOFValue.getSelectedItem());
     }
 

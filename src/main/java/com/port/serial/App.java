@@ -27,6 +27,15 @@ public class App
     private static char[] finishingString;
     private static SerialPort comPort;
 
+    public App(String text) {
+
+        comPort = SerialPort.getCommPort(text);
+        System.out.println("COMPOER SELECTED: "+ comPort.getSystemPortName());
+        SelectedCOMPort = text;
+        setCOMParameters();
+
+    }
+
     public String getValue()
     {
         return value;
@@ -70,17 +79,25 @@ public class App
                     System.out.println("CON port exisits, index : " + portNo);
                 }
 
-                if (serialPorts[portNo].getSystemPortName().equals("COM2")) {
-                    System.out.println("TAKEN PORT: " + serialPorts[portNo].getSystemPortName());
-                    SelectedCOMPort = serialPorts[portNo].getSystemPortName();
-
-                }
+//                if (serialPorts[portNo].getSystemPortName().equals("COM2")) {
+//                    System.out.println("TAKEN PORT: " + serialPorts[portNo].getSystemPortName());
+//                    SelectedCOMPort = serialPorts[portNo].getSystemPortName();
+//
+//                }
                 index_of_port++;
             }
 
-
+            // WRONG RETURNING, THIS IS FOR INITIALIZE
             comPort = SerialPort.getCommPorts()[index_of_port];
+            SelectedCOMPort = serialPorts[index_of_port].getSystemPortName();
             setCOMParameters();
+
+
+            // testing purpose
+
+
+
+
         }
         catch (Exception exc){
             JOptionPane.showMessageDialog(null, "BRAK DOSTEPNYCH PORTOW COM, lista dostepny, program nie moze wystartowac: " + exc);
@@ -96,23 +113,6 @@ public class App
 
     public void CLosePortCOM() {
         comPort.closePort();
-    }
-
-    public enum com {
-
-        COM1(1), COM2(2),COM3(3),COM(4);
-
-       public final int id;
-
-       private com(final int id)
-       {
-           this.id = id;
-        }
-        public int getCOM()
-        {
-            return id;
-        }
-
     }
 
     public void run(final StringValueClass interestingText)
@@ -132,15 +132,12 @@ public class App
             System.out.println("Expection in finishingString creation");
         }
 
-
-
         printCOMInformation2();
           setCOMParameters();
           printCOMInformation2();
 
 
         comPort.openPort();
-
         comPort.addDataListener(new SerialPortDataListener() {
 
             public int getListeningEvents() {
@@ -203,8 +200,6 @@ public class App
 
 	public void printCOMInformation2()
     {
-
-
         System.out.println("COM settings : ");
         System.out.println("Port Name: " + comPort.getDescriptivePortName());
         System.out.println("Port desc: " +  comPort.getPortDescription());
@@ -216,22 +211,14 @@ public class App
         System.out.println("NumBitStops: " + comPort.getNumStopBits());
         System.out.println("FlowControlSettings: " + comPort.getFlowControlSettings() );
 
-
-
     }
 
     public static void setCOMParameters()
     {
-        comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
-     //   comPort.setFlowControl(SerialPort.FLOW);
-
-
+       // comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
 
         try {
-
             comPort.setFlowControl(machine_info.getXonxof().getValue());
-
-
             comPort.setComPortParameters(
                     Integer.parseInt(machine_info.getBaudRate()),
                     Integer.parseInt(machine_info.getDataBits()),
@@ -239,9 +226,7 @@ public class App
                     machine_info.getParity().getValue());
 
 
-
-        }catch(Exception e)
-        {
+        }catch(Exception e) {
             System.out.println("something went wrong, 221 setting comPort: " + e);
         }
 
@@ -259,7 +244,6 @@ public class App
             System.out.print("Cannot open port: "+ e);
         }
 
-     //  byte[] filecontent = Files.readAllBytes(Paths.get("gcode.txt"));  // <- testing purpose
         byte[] filecontent = Files.readAllBytes(Paths.get(file));
 
         int sendDataSize = filecontent.length;
@@ -270,47 +254,10 @@ public class App
         System.out.println("available bytes  BEFORE : " + comPort.bytesAvailable());
         System.out.println("bytes awaiting to write BEFORE: " + comPort.bytesAwaitingWrite());
 
-         int bytesAwait = sendDataSize;
         try {
 
                 //working properly
                 comPort.writeBytes(filecontent, sendDataSize);
-
-                // write bytes in the loop with check
-
-
-
-//
-//                String firstSelectedChar = null;
-//                for(int i = 0 ; i < filecontent.length; i++)
-//                {
-//                    byte   filecontent_shrinken = filecontent[i];
-//                    comPort.writeBytes(new byte[]{filecontent_shrinken}, 1);
-//                    System.out.println("added: "+ i + " -> " +  (char)filecontent_shrinken);
-//
-//                    String text = fileTextArea.getText();
-//                    if(1 >=1) {
-//                        firstSelectedChar = text.substring(i , i+ 1 );
-//                        try {
-//                            fileTextArea.getHighlighter().addHighlight(i,i+1, new DefaultHighlighter.DefaultHighlightPainter(Color.cyan));
-//                        } catch (BadLocationException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                    String finalFirstSelectedChar = firstSelectedChar;
-//                    new Thread(() -> {
-//                               fileTextArea.append(finalFirstSelectedChar);
-//                               fileTextArea.revalidate();
-//                    }).start();
-//                }
-
-
-
-
-
-
-
-
 
 
                 System.out.println("available bytes : " + comPort.bytesAvailable());
@@ -319,7 +266,6 @@ public class App
                 System.out.println("bytes awaiting to write : " + comPort.bytesAwaitingWrite());
                 System.out.println("filecontent While  send to cnc: " + filecontent.length);
 
-          //  }
 
             System.out.println("sent");
         }
