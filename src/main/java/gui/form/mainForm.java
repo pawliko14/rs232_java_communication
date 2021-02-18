@@ -73,6 +73,10 @@ public  class mainForm extends JPanel {
         // add GeneralComPort settings
         ComSetting = new ComPortSetting();
 
+        System.out.println("TEST before initilie ComboBoxes");
+
+        transmission.getAvailableCOMPorts();
+
         InitializeCOmboBoxes(transmission.getAvailableCOMPorts());
         Initialize();
         InitializeTransmissionInfo();
@@ -275,6 +279,12 @@ public  class mainForm extends JPanel {
         // first comboBox -> COM port chooser
         try {
             availableCOMPorts.forEach(e -> COMcomboBox.addItem(e.getSystemPortName()));
+
+            System.out.println("Test: ");
+            for (int i = 0 ; i < availableCOMPorts.size(); i++) {
+                System.out.println(availableCOMPorts.get(i).getSystemPortName());
+            }
+
         }catch(Exception e) {
             System.out.println("Error in COMcomboBox initliazie: " + e);
         }
@@ -293,35 +303,35 @@ public  class mainForm extends JPanel {
         try{
             ComSetting.getParityList().forEach(e -> ParityValue.addItem(e));
         }catch (Exception e){
-            System.out.println("Error in BaudRate Setting");
+            System.out.println("Error in Parity");
         }
 
-        //4th ComBox -> StopBits
+        //4th ComBox -> DataBits
         try{
             ComSetting.getDataBitsList().forEach(e -> DataBitsValue.addItem(e));
         }catch (Exception e){
-            System.out.println("Error in BaudRate Setting");
+            System.out.println("Error in DataBits");
         }
 
         //5th ComBox -> StopBits
         try{
             ComSetting.getStopBitsList().forEach(e -> StopBItsValue.addItem(e));
         }catch (Exception e){
-            System.out.println("Error in BaudRate Setting");
+            System.out.println("Error in StopBits");
         }
 
         //6th ComBox -> TimeOutValue
         try{
             TimeOutValue.addItem("Not Implemented");
         }catch (Exception e){
-            System.out.println("TimeOutValue is disabled");
+            System.out.println("error in TImeOutValue setting");
         }
 
-        //7th ComBox -> Parity
+        //7th ComBox -> Flow COntroll
         try{
             ComSetting.getFlowcontrollList().forEach(e -> XONXOFValue.addItem(e));
         }catch (Exception e){
-            System.out.println("Error in BaudRate Setting");
+            System.out.println("Error in FLowControll setting");
         }
 
 
@@ -346,9 +356,10 @@ public  class mainForm extends JPanel {
         machine_info.setBaudRate(BaudRateValue.getSelectedItem().toString());
         machine_info.setParity((ComPortSetting.Parities) ParityValue.getSelectedItem());
         machine_info.setDataBits(DataBitsValue.getSelectedItem().toString());
-        machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
+           machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
    //     machine_info.setTimeout(TimeOutValue.getSelectedItem().toString());  // <- NPE!
-        machine_info.setXonxof(XONXOFValue.getSelectedItem().toString());
+ //       machine_info.setXonxof(XONXOFValue.getSelectedItem().toString());
+        machine_info.setXonxof((ComPortSetting.FlowControll)  XONXOFValue.getSelectedItem()) ;
 
     }
 
@@ -368,8 +379,8 @@ public  class mainForm extends JPanel {
         machine_info.setDataBits(DataBitsValue.getSelectedItem().toString());
         machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
       //  machine_info.setTimeout(TimeOutValue.getSelectedItem().toString());
-        machine_info.setXonxof(XONXOFValue.getSelectedItem().toString());
-
+     //   machine_info.setXonxof(XONXOFValue.getSelectedItem().toString());
+        machine_info.setXonxof((ComPortSetting.FlowControll) XONXOFValue.getSelectedItem());
     }
 
     private void save_taken_data_into_file() {

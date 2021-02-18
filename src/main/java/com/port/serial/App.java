@@ -43,40 +43,53 @@ public class App
 
     public App()
     {
-        COMPortList = new ArrayList<SerialPort>();
-        // for tests :
-        SerialPort[] serialPorts = SerialPort.getCommPorts();
-       System.out.println("Number of serial port available:{}" +  serialPorts.length);
-       int index_of_port = 0;
-        for (int portNo = 1; portNo < serialPorts.length; portNo++) {
+        try {
 
-            System.out.println("SerialPort[{}]:[{},{}]"+ portNo + 1);
-            System.out.println( serialPorts[portNo].getSystemPortName());
-            System.out.println("COM shortened name: " + serialPorts[portNo].getSystemPortName() + " its index : " + index_of_port);
+            COMPortList = new ArrayList<SerialPort>();
+            // for tests :
+            SerialPort[] serialPorts = SerialPort.getCommPorts();
 
-            // invalid COM port, do not push to the list
-            if(!serialPorts[portNo].getSystemPortName().equals("CON")) {
-                COMPortList.add(serialPorts[portNo]);
-            }
-            else {
-                System.out.println("CON port exisits, index : " + portNo);
-            }
-
-            if(serialPorts[portNo].getSystemPortName().equals("COM2"))
-            {
-                System.out.println("TAKEN PORT: " + serialPorts[portNo].getSystemPortName());
-                SelectedCOMPort =  serialPorts[portNo].getSystemPortName();
-
+            if (serialPorts.length == 0) {
+                JOptionPane.showMessageDialog(null, "BRAK DOSTEPNYCH PORTOW COM, lista dostepny, program nie moze wystartowac: " + serialPorts.length);
+                System.exit(0);
             }
 
 
-            index_of_port++;
+            System.out.println("Number of serial port available:{}" + serialPorts.length);
+
+            for(int i = 0 ; i < serialPorts.length;i++) {
+                System.out.println("serial " + i + " : " + serialPorts[i].getSystemPortName());
+            }
+            int index_of_port = 0;
+            for (int portNo = 1; portNo < serialPorts.length; portNo++) {
+
+                System.out.println("SerialPort[{}]:[{},{}]" + portNo + 1);
+                System.out.println(serialPorts[portNo].getSystemPortName());
+                System.out.println("COM shortened name: " + serialPorts[portNo].getSystemPortName() + " its index : " + index_of_port);
+
+                // invalid COM port, do not push to the list
+                if (!serialPorts[portNo].getSystemPortName().equals("CON")) {
+                    COMPortList.add(serialPorts[portNo]);
+                } else {
+                    System.out.println("CON port exisits, index : " + portNo);
+                }
+
+                if (serialPorts[portNo].getSystemPortName().equals("COM2")) {
+                    System.out.println("TAKEN PORT: " + serialPorts[portNo].getSystemPortName());
+                    SelectedCOMPort = serialPorts[portNo].getSystemPortName();
+
+                }
+                index_of_port++;
+            }
+
+
+            comPort = SerialPort.getCommPorts()[index_of_port];
+            setCOMParameters();
         }
+        catch (Exception exc){
+            JOptionPane.showMessageDialog(null, "BRAK DOSTEPNYCH PORTOW COM, lista dostepny, program nie moze wystartowac: " + exc);
 
-
-
-        comPort = SerialPort.getCommPorts()[index_of_port];
-        setCOMParameters();
+        }
     }
 
     public String getSelectedCOMPort() {
@@ -126,8 +139,8 @@ public class App
 
 
         printCOMInformation2();
-        //   setCOMParameters(comPort);
-        //  printCOMInformation2(comPort);
+          setCOMParameters();
+          printCOMInformation2();
 
 
         comPort.openPort();
@@ -195,33 +208,39 @@ public class App
 	public void printCOMInformation2()
     {
 
+
         System.out.println("COM settings : ");
         System.out.println("Port Name: " + comPort.getDescriptivePortName());
         System.out.println("Port desc: " +  comPort.getPortDescription());
         System.out.println("Baud: " + comPort.getBaudRate());
-        System.out.println("FLow: " + comPort.getFlowControlSettings());
         System.out.println("CTS: " + comPort.getCTS());
         System.out.println("DCD: " + comPort.getDCD());
         System.out.println("Parity: " + comPort.getParity());
         System.out.println("NumDataBit: " + comPort.getNumDataBits());
         System.out.println("NumBitStops: " + comPort.getNumStopBits());
+        System.out.println("FlowControlSettings: " + comPort.getFlowControlSettings() );
+
 
 
     }
 
     public static void setCOMParameters()
     {
-        comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
-      //  comPort.setComPortParameters(9600,7,SerialPort.ONE_STOP_BIT,SerialPort.EVEN_PARITY);
+       // comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
+        comPort.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED);
 
-        System.out.println("parity : " + machine_info.getParity());
+
 
         try {
+
+            comPort.setFlowControl(machine_info.getXonxof().getValue());
+
+
             comPort.setComPortParameters(
                     Integer.parseInt(machine_info.getBaudRate()),
                     Integer.parseInt(machine_info.getDataBits()),
                     SerialPort.ONE_STOP_BIT,
-                    machine_info.getParity().ordinal());
+                    machine_info.getParity().getValue());
 
 
 
@@ -251,16 +270,17 @@ public class App
         System.out.println("size of data BEFORE  send to cnc: " + sendDataSize);
         System.out.println("filecontent BEFORE  send to cnc: " + filecontent.length);
 
+
+        System.out.println("available bytes  BEFORE : " + comPort.bytesAvailable());
+        System.out.println("bytes awaiting to write BEFORE: " + comPort.bytesAwaitingWrite());
+
          int bytesAwait = sendDataSize;
         try {
-            Thread.sleep(500);
 
                 //working properly
                 comPort.writeBytes(filecontent, sendDataSize);
 
                 // write bytes in the loop with check
-
-
 
 
 
@@ -297,11 +317,11 @@ public class App
 
 
 
-//                System.out.println("available bytes : " + comPort.bytesAvailable());
-//                System.out.println("buffed ready buffered size : " + comPort.getDeviceReadBufferSize());
-//                System.out.println("device writ buffer size : " + comPort.getDeviceWriteBufferSize());
-//                System.out.println("bytes awaiting to write : " + comPort.bytesAwaitingWrite());
-//                System.out.println("filecontent While  send to cnc: " + filecontent.length);
+                System.out.println("available bytes : " + comPort.bytesAvailable());
+                System.out.println("buffed ready buffered size : " + comPort.getDeviceReadBufferSize());
+                System.out.println("device writ buffer size : " + comPort.getDeviceWriteBufferSize());
+                System.out.println("bytes awaiting to write : " + comPort.bytesAwaitingWrite());
+                System.out.println("filecontent While  send to cnc: " + filecontent.length);
 
           //  }
 

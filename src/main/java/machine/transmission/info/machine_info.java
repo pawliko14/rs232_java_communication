@@ -9,7 +9,7 @@ public class machine_info {
     public static String DataBits = "7";
     public static String StopBits = "2";
     public static String Timeout = "OFF";
-    public static String xonxof = "ON";
+    public static ComPortSetting.FlowControll xonxof = ComPortSetting.FlowControll.XONXOFF_IN;
     public static String COM  ="COM3";
 
     public static String getBaudRate() {
@@ -32,7 +32,7 @@ public class machine_info {
         return Timeout;
     }
 
-    public static String getXonxof() {
+    public static ComPortSetting.FlowControll getXonxof() {
         return xonxof;
     }
 
@@ -60,8 +60,8 @@ public class machine_info {
         Timeout = timeout;
     }
 
-    public static void setXonxof(String xonxof) {
-        machine_info.xonxof = xonxof;
+    public static void setXonxof(ComPortSetting.FlowControll flow) {
+        xonxof = flow;
     }
 
     public static void setCOM(String COM) {

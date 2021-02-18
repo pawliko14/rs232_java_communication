@@ -8,7 +8,7 @@ public class ComPortSetting {
     private List<String> DataBitsList;
     private List<Parities> ParityList;
     private List<String> StopBitsList;
-    private List<String> FlowcontrollList;
+    private List<FlowControll> FlowcontrollList;
     
     public ComPortSetting()
     {
@@ -17,7 +17,7 @@ public class ComPortSetting {
         DataBitsList = new ArrayList<>();
         ParityList = new ArrayList<>();
         StopBitsList = new ArrayList<>();
-        FlowcontrollList = new ArrayList<>();
+        FlowcontrollList = new ArrayList<FlowControll>();
         
         // call basic functionalities;
         getBaud();
@@ -28,17 +28,31 @@ public class ComPortSetting {
         
     }
 
+    public enum FlowControll {
+        XONXOFF_IN(65536),
+        XONXOFF_OUT(1048576),
+        RTS(1);
+
+         int flowControll;
+         private FlowControll(int flow) {
+            flowControll = flow;
+        }
+
+        public int getValue() { return flowControll; }
+
+    }
+
     private void getFLow() {
-        FlowcontrollList.add("Xon-Xoff");
-        FlowcontrollList.add("None");
+        FlowcontrollList.add(FlowControll.XONXOFF_IN);
+        FlowcontrollList.add(FlowControll.XONXOFF_OUT);
+        FlowcontrollList.add(FlowControll.RTS);
+
     }
 
     private void getStopBits() {
         StopBitsList.add("1");
         StopBitsList.add("1,5");
         StopBitsList.add("2");
-
-
     }
 
 
@@ -49,25 +63,20 @@ public class ComPortSetting {
             NONE(0);
 
             int par;
-
             private Parities(int parity) {
                 par = parity;
             }
+            public int getValue() { return par; }
         }
 
 
     private void getParity() {
-
-
-
         ParityList.add(Parities.EVEN);
         ParityList.add(Parities.ODD);
         ParityList.add(Parities.NONE);
-
     }
 
     private void getDataBit() {
-
         DataBitsList.add("7");
         DataBitsList.add("8");
     }
@@ -90,20 +99,16 @@ public class ComPortSetting {
     public List<String> getBaudRateList() {
         return BaudRateList;
     }
-
     public List<String> getDataBitsList() {
         return DataBitsList;
     }
-
     public List<Parities> getParityList() {
         return ParityList;
     }
-
     public List<String> getStopBitsList() {
         return StopBitsList;
     }
-
-    public List<String> getFlowcontrollList() {
+    public List<FlowControll> getFlowcontrollList() {
         return FlowcontrollList;
     }
 }
