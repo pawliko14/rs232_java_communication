@@ -73,6 +73,10 @@ public  class mainForm extends JPanel {
         // add GeneralComPort settings
         ComSetting = new ComPortSetting();
 
+        System.out.println("TEST before initilie ComboBoxes");
+
+        transmission.getAvailableCOMPorts();
+
         InitializeCOmboBoxes(transmission.getAvailableCOMPorts());
         Initialize();
         InitializeTransmissionInfo();
@@ -275,6 +279,12 @@ public  class mainForm extends JPanel {
         // first comboBox -> COM port chooser
         try {
             availableCOMPorts.forEach(e -> COMcomboBox.addItem(e.getSystemPortName()));
+
+            System.out.println("Test: ");
+            for (int i = 0 ; i < availableCOMPorts.size(); i++) {
+                System.out.println(availableCOMPorts.get(i).getSystemPortName());
+            }
+
         }catch(Exception e) {
             System.out.println("Error in COMcomboBox initliazie: " + e);
         }
@@ -346,7 +356,7 @@ public  class mainForm extends JPanel {
         machine_info.setBaudRate(BaudRateValue.getSelectedItem().toString());
         machine_info.setParity((ComPortSetting.Parities) ParityValue.getSelectedItem());
         machine_info.setDataBits(DataBitsValue.getSelectedItem().toString());
-        machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
+           machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
    //     machine_info.setTimeout(TimeOutValue.getSelectedItem().toString());  // <- NPE!
  //       machine_info.setXonxof(XONXOFValue.getSelectedItem().toString());
         machine_info.setXonxof((ComPortSetting.FlowControll)  XONXOFValue.getSelectedItem()) ;

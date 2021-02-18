@@ -56,6 +56,10 @@ public class App
 
 
             System.out.println("Number of serial port available:{}" + serialPorts.length);
+
+            for(int i = 0 ; i < serialPorts.length;i++) {
+                System.out.println("serial " + i + " : " + serialPorts[i].getSystemPortName());
+            }
             int index_of_port = 0;
             for (int portNo = 1; portNo < serialPorts.length; portNo++) {
 
@@ -222,8 +226,8 @@ public class App
 
     public static void setCOMParameters()
     {
-        comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
-     //   comPort.setFlowControl(SerialPort.FLOW);
+       // comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
+        comPort.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED);
 
 
 
