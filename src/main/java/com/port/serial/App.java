@@ -61,7 +61,7 @@ public class App
                 System.out.println("serial " + i + " : " + serialPorts[i].getSystemPortName());
             }
             int index_of_port = 0;
-            for (int portNo = 1; portNo < serialPorts.length; portNo++) {
+            for (int portNo = 0; portNo < serialPorts.length; portNo++) {
 
                 System.out.println("SerialPort[{}]:[{},{}]" + portNo + 1);
                 System.out.println(serialPorts[portNo].getSystemPortName());
@@ -73,17 +73,13 @@ public class App
                 } else {
                     System.out.println("CON port exisits, index : " + portNo);
                 }
-
-                if (serialPorts[portNo].getSystemPortName().equals("COM2")) {
-                    System.out.println("TAKEN PORT: " + serialPorts[portNo].getSystemPortName());
-                    SelectedCOMPort = serialPorts[portNo].getSystemPortName();
-
-                }
-                index_of_port++;
+                index_of_port=portNo;
             }
 
 
             comPort = SerialPort.getCommPorts()[index_of_port];
+            System.out.println("comPort: " + index_of_port);
+        //    SelectedCOMPort = serialPorts[0].getSystemPortName();
             setCOMParameters();
         }
         catch (Exception exc){
@@ -100,23 +96,6 @@ public class App
 
     public void CLosePortCOM() {
         comPort.closePort();
-    }
-
-    public enum com {
-
-        COM1(1), COM2(2),COM3(3),COM(4);
-
-       public final int id;
-
-       private com(final int id)
-       {
-           this.id = id;
-        }
-        public int getCOM()
-        {
-            return id;
-        }
-
     }
 
     public void run(final StringValueClass interestingText)
@@ -138,7 +117,7 @@ public class App
 
 
 
-        printCOMInformation2();
+          printCOMInformation2();
           setCOMParameters();
           printCOMInformation2();
 
@@ -227,19 +206,23 @@ public class App
     public static void setCOMParameters()
     {
        // comPort.setFlowControl(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED);
-        comPort.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED);
+    //    comPort.setFlowControl(SerialPort.FLOW_CONTROL_RTS_ENABLED);
 
+     //   System.out.println("FLow control value when RTS is Enabled: "+ SerialPort.FLOW_CONTROL_RTS_ENABLED);
 
 
         try {
 
             comPort.setFlowControl(machine_info.getXonxof().getValue());
 
+            System.out.println("FLow control value AFTER setFlowCOntrol : "+ SerialPort.FLOW_CONTROL_RTS_ENABLED + " -> "+ machine_info.getXonxof().getValue());
+
+
 
             comPort.setComPortParameters(
                     Integer.parseInt(machine_info.getBaudRate()),
                     Integer.parseInt(machine_info.getDataBits()),
-                    SerialPort.ONE_STOP_BIT,
+                    Integer.parseInt(machine_info.getStopBits()),                    // SerialPort.ONE_STOP_BIT,
                     machine_info.getParity().getValue());
 
 
@@ -255,24 +238,18 @@ public class App
 
         try {
             comPort.openPort();
-            printCOMInformation2();
+
+            System.out.println("comPort stopBits value::" + comPort.getNumStopBits());
 
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             System.out.print("Cannot open port: "+ e);
         }
 
-     //  byte[] filecontent = Files.readAllBytes(Paths.get("gcode.txt"));  // <- testing purpose
         byte[] filecontent = Files.readAllBytes(Paths.get(file));
 
         int sendDataSize = filecontent.length;
-        System.out.println("size of data BEFORE  send to cnc: " + sendDataSize);
-        System.out.println("filecontent BEFORE  send to cnc: " + filecontent.length);
 
-
-        System.out.println("available bytes  BEFORE : " + comPort.bytesAvailable());
-        System.out.println("bytes awaiting to write BEFORE: " + comPort.bytesAwaitingWrite());
 
          int bytesAwait = sendDataSize;
         try {
@@ -280,50 +257,7 @@ public class App
                 //working properly
                 comPort.writeBytes(filecontent, sendDataSize);
 
-                // write bytes in the loop with check
 
-
-
-//
-//                String firstSelectedChar = null;
-//                for(int i = 0 ; i < filecontent.length; i++)
-//                {
-//                    byte   filecontent_shrinken = filecontent[i];
-//                    comPort.writeBytes(new byte[]{filecontent_shrinken}, 1);
-//                    System.out.println("added: "+ i + " -> " +  (char)filecontent_shrinken);
-//
-//                    String text = fileTextArea.getText();
-//                    if(1 >=1) {
-//                        firstSelectedChar = text.substring(i , i+ 1 );
-//                        try {
-//                            fileTextArea.getHighlighter().addHighlight(i,i+1, new DefaultHighlighter.DefaultHighlightPainter(Color.cyan));
-//                        } catch (BadLocationException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                    String finalFirstSelectedChar = firstSelectedChar;
-//                    new Thread(() -> {
-//                               fileTextArea.append(finalFirstSelectedChar);
-//                               fileTextArea.revalidate();
-//                    }).start();
-//                }
-
-
-
-
-
-
-
-
-
-
-                System.out.println("available bytes : " + comPort.bytesAvailable());
-                System.out.println("buffed ready buffered size : " + comPort.getDeviceReadBufferSize());
-                System.out.println("device writ buffer size : " + comPort.getDeviceWriteBufferSize());
-                System.out.println("bytes awaiting to write : " + comPort.bytesAwaitingWrite());
-                System.out.println("filecontent While  send to cnc: " + filecontent.length);
-
-          //  }
 
             System.out.println("sent");
         }

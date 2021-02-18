@@ -17,6 +17,12 @@ public class main {
 
         App transmission = new App();
 
+        System.out.println("before passing");
+        for(int i = 0 ; i < transmission.getAvailableCOMPorts().size();i++)
+        {
+            System.out.println("i -> "+ i + " : " + transmission.getAvailableCOMPorts().get(i));
+        }
+
         JFrame frame = new JFrame("RS232 CNC -> COMPUTER -> CNC");
         frame.getContentPane().add(new mainForm(transmission).getter());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

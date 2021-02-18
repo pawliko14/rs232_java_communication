@@ -299,7 +299,7 @@
               <component id="ea9ee" class="javax.swing.JTextArea" binding="FileTextArea">
                 <constraints/>
                 <properties>
-                  <editable value="false"/>
+                  <editable value="true"/>
                   <font size="22"/>
                 </properties>
               </component>

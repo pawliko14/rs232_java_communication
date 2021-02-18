@@ -31,7 +31,6 @@ public  class mainForm extends JPanel {
     private JTextField DataBits;
     private JTextField StopBits;
     private JTextField TimeOut;
-    private JTextField StopBitsValue;
     private JComboBox TimeOutValue;
     private JTextField XONXOF;
     private JComboBox XONXOFValue;
@@ -73,9 +72,12 @@ public  class mainForm extends JPanel {
         // add GeneralComPort settings
         ComSetting = new ComPortSetting();
 
-        System.out.println("TEST before initilie ComboBoxes");
+        System.out.println("TEST before initialize ComboBoxes");
 
-        transmission.getAvailableCOMPorts();
+        for(int i = 0 ; i < transmission.getAvailableCOMPorts().size();i++)
+        {
+            System.out.println("i -> "+ i + " : " + transmission.getAvailableCOMPorts().get(i));
+        }
 
         InitializeCOmboBoxes(transmission.getAvailableCOMPorts());
         Initialize();
@@ -228,10 +230,7 @@ public  class mainForm extends JPanel {
 
           SerialPort SelectedItem =   getCOMbyCOMPort(COMcomboBox.getSelectedItem().toString());
 
-
-          //  assert SelectedItem != null;
-      //      UpdateCOMSettings(SelectedItem);
-            JOptionPane.showMessageDialog(null,"Wybrano :" + SelectedItem + " -> " + SelectedItem.getSystemPortName());
+          JOptionPane.showMessageDialog(null,"Wybrano :" + SelectedItem + " -> " + SelectedItem.getSystemPortName());
 
             System.out.println(SelectedItem.getBaudRate() + ", " + SelectedItem.getParity());
 
@@ -263,15 +262,6 @@ public  class mainForm extends JPanel {
         return SerialPortToReturn;
     }
 
-
-//    private void UpdateCOMSettings(SerialPort selectedItem) {
-//
-//        SelectedCOMPort.setText(selectedItem.getSystemPortName());
-//        BaudRateValue.setText(String.valueOf(selectedItem.getBaudRate()));
-//        ParityValue.setText(String.valueOf(selectedItem.getParity()));
-//        DataBitsValue.setText(String.valueOf(selectedItem.getNumDataBits()));
-//
-//    }
 
     private void InitializeCOmboBoxes(List<SerialPort> availableCOMPorts) {
 
@@ -356,30 +346,22 @@ public  class mainForm extends JPanel {
         machine_info.setBaudRate(BaudRateValue.getSelectedItem().toString());
         machine_info.setParity((ComPortSetting.Parities) ParityValue.getSelectedItem());
         machine_info.setDataBits(DataBitsValue.getSelectedItem().toString());
-           machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
-   //     machine_info.setTimeout(TimeOutValue.getSelectedItem().toString());  // <- NPE!
- //       machine_info.setXonxof(XONXOFValue.getSelectedItem().toString());
+        machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
+
+        System.out.println("VLAUE CHANGE FOR STOP BIT : " + machine_info.getStopBits());
+
         machine_info.setXonxof((ComPortSetting.FlowControll)  XONXOFValue.getSelectedItem()) ;
 
     }
 
     private void InitializeTransmissionInfo() {
 
-//       BaudRateValue.setText(machine_info.getBaudRate());
-//        BaudRateValue.setText("");
-//       ParityValue.setText(machine_info.getParity());
-//        DataBitsValue.setText(machine_info.getDataBits());
-//        StopBitsValue.setText(machine_info.getStopBits());
-//        TimeOutValue.setText(machine_info.getTimeout());
-//        XONXOFValue.setText(machine_info.getXonxof());
 
 
         machine_info.setBaudRate(BaudRateValue.getSelectedItem().toString());
         machine_info.setParity((ComPortSetting.Parities)ParityValue.getSelectedItem());
         machine_info.setDataBits(DataBitsValue.getSelectedItem().toString());
         machine_info.setStopBits(StopBItsValue.getSelectedItem().toString());
-      //  machine_info.setTimeout(TimeOutValue.getSelectedItem().toString());
-     //   machine_info.setXonxof(XONXOFValue.getSelectedItem().toString());
         machine_info.setXonxof((ComPortSetting.FlowControll) XONXOFValue.getSelectedItem());
     }
 
